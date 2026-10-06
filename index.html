@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>calanonsol wallet</title>
+  <meta name="description" content="A 3D wallet that folds open to show a live overview of a Solana wallet and pump.fun creator profile." />
+  <meta name="theme-color" content="#0c0b0a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='7' width='26' height='19' rx='4' fill='%234a2c1a'/%3E%3Crect x='19' y='13' width='10' height='7' rx='3' fill='%235cffb0'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#top">@<span data-username>calanonsol</span></a>
+    <nav>
+      <a id="link-pump" target="_blank" rel="noopener noreferrer">pump.fun ↗</a>
+      <a id="link-solscan" target="_blank" rel="noopener noreferrer">Solscan ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section id="stage" class="stage" aria-label="Interactive 3D wallet">
+      <div class="stage-copy">
+        <p class="eyebrow">Solana wallet · pump.fun creator</p>
+        <h1>@<span data-username>calanonsol</span></h1>
+      </div>
+      <div class="stage-ui">
+        <p id="hint" class="hint" aria-live="polite">Hover to open</p>
+        <button id="toggle" class="btn" type="button" aria-expanded="false">Open wallet</button>
+      </div>
+      <noscript><p class="noscript">This page needs JavaScript to show live wallet data.</p></noscript>
+    </section>
+
+    <section class="overview-wrap" aria-labelledby="overview-title">
+      <div class="overview-head">
+        <h2 id="overview-title">Overview</h2>
+        <div class="overview-meta">
+          <span id="updated" role="status">Loading…</span>
+          <button id="refresh" class="btn small" type="button">Refresh</button>
+        </div>
+      </div>
+      <div id="overview" class="grid" aria-busy="true"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Live data from public Solana RPC, DexScreener and pump.fun, fetched in your browser. Not financial advice.</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
