@@ -16,7 +16,18 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-Any static host works (GitHub Pages, Netlify, Cloudflare Pages, Vercel).
+## Deploy to itscalan.org (GitHub Pages)
+
+`CNAME` already contains `itscalan.org`. Then:
+
+1. Repo **Settings > Pages**: deploy from a branch, pick the branch (and `/ (root)`), save.
+2. At your DNS provider, add for the apex `itscalan.org`:
+   - `A` records: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - optional `AAAA` records: `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+   - optional `www` as a `CNAME` to `tofted.github.io` (GitHub then redirects www to the apex)
+3. Back in Settings > Pages, wait for the DNS check, then tick **Enforce HTTPS** (the certificate can take up to an hour).
+
+Any other static host (Netlify, Cloudflare Pages, Vercel) also works, just delete `CNAME` and follow their domain steps.
 
 ## How it behaves
 
