@@ -58,6 +58,25 @@ Any other static host (Netlify, Cloudflare Pages, Vercel) also works, just delet
 - Reduced-motion users get no idle float or pointer parallax.
 - No WebGL? The overview below the wallet still works.
 
+## Deploying changes (cache busting)
+
+GitHub Pages lets browsers cache CSS and JS for about 10 minutes. Without precautions, someone who visited just before a deploy can get the new HTML with the old CSS and JS, and the page renders broken (unstyled, no 3D). So `index.html` requests every file as `file?v=<content hash>`, and a browser always gets one matching set.
+
+`scripts/stamp.mjs` writes those hashes. After editing any `js/` or `styles.css` file, run:
+
+```sh
+node scripts/stamp.mjs          # rewrite index.html
+node scripts/stamp.mjs --check  # verify, exits 1 if stale
+```
+
+To make git do it for you on every commit, enable the bundled hook once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+If you edit files on github.com or without that hook, run the stamp before you push, or the site keeps serving the previous hashes (which is safe, just old).
+
 ## Where the data comes from
 
 Everything is fetched in the visitor's browser and refreshes every 60s.
@@ -82,7 +101,7 @@ Edit `js/config.js`. That's the only place they live (the leather logo and cards
 ## Files
 
 ```
-index.html        page + import map
+index.html        page + import map (hashes written by scripts/stamp.mjs)
 styles.css
 js/config.js      wallet, username, endpoints
 js/data.js        all network calls, partial failure tolerant
@@ -94,5 +113,6 @@ js/minecraft-home.js   Minecraft homepage content
 js/minecraft-scene.js  homepage 3D voxel islands
 js/minecraft.js   Technology page renderer
 js/portfolio.js   your Minecraft portfolio content
+scripts/stamp.mjs cache-busting hashes for index.html
 vendor/three/     three.js (MIT) + RoundedBoxGeometry, RoomEnvironment
 ```

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Re-stamps index.html when css/js changed, so a deploy can never mix old and new files.
+node scripts/stamp.mjs && git add index.html
