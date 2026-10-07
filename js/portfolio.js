@@ -19,29 +19,29 @@ export const PORTFOLIO = {
   network: {
     id: 'network',
     name: 'One network, two engines',
-    tagline: 'A from-scratch Minestom hub and a Paper survival server, linked with no proxy.',
+    tagline: 'A Minestom hub and a Paper plugin that talk to each other using nothing but the Minecraft protocol.',
     description: [
-      'Networks usually put a proxy in front of their servers. This one does not. CMinigames runs on Minestom, a bare protocol library with no gameplay of its own, and CSMP runs on Paper, which is full vanilla. Two very different engines, behaving like one server.',
-      'Players cross between them, moderation and announcements work on both, and each server can warn the other about maintenance, even though there is no direct channel between them.',
+      'CMinigames runs on Minestom, a bare protocol library with no gameplay of its own, and CSMP runs on Paper, which is full vanilla. Two very different engines, and the hub and the SMP plugin signal each other directly, in both directions.',
+      'There is no proxy and no separate messaging layer between them. They use only what the Minecraft protocol already provides: the server-list ping, client cookies and transfer packets. That is enough for one maintenance schedule that warns both servers, and a restart countdown that reconnects players when the SMP comes back.',
     ].join('\n\n'),
     stats: [],
-    tags: ['Minestom', 'Paper', 'No proxy', 'Transfer packets', 'Cookies', 'SRV records'],
+    tags: ['Minestom', 'Paper', 'No proxy', 'Server-list ping', 'Cookies'],
     links: [],
     sections: [
       {
         title: 'How the two talk',
         items: [
           {
-            title: 'Client transfer packets',
-            text: 'Players cross with Minecraft\'s own transfer packet, so there is no proxy in the path. The client follows SRV records, so the real port lives only in DNS.',
+            title: 'Hub to SMP: the server-list ping',
+            text: 'The servers have no link to each other, so the hub publishes its maintenance schedule inside its server-list ping as maint:<epochMillis>:<scope>. The Paper plugin pings the hub every thirty seconds and adopts whatever it finds.',
           },
           {
-            title: 'Cookies carry the reason',
-            text: 'Chat is wiped by the hop, so the reason for a transfer travels in a client cookie. The hub reads it on arrival and shows an "SMP restarting" notice with a countdown that reconnects the player once the SMP answers a ping again.',
+            title: 'SMP to hub: hand-off and reason',
+            text: 'When the SMP stops, the plugin transfers everyone to the hub and passes the reason in a client cookie, because chat is wiped by the hop. The hub reads it on arrival and shows an "SMP restarting" countdown that reconnects each player once the SMP answers a ping again.',
           },
           {
-            title: 'Server-list ping as a message channel',
-            text: 'The servers have no link to each other, so the hub publishes its maintenance schedule in its server-list ping. The Paper plugin pings the hub every thirty seconds and adopts it. Both show a countdown boss bar, and only the server actually named stops.',
+            title: 'Kept in step',
+            text: 'Maintenance is scheduled once. Both servers show a countdown boss bar, and only the server actually named stops, which also decides whether SMP players are transferred to the hub or kicked with the reason.',
           },
           {
             title: 'One set of tools',
