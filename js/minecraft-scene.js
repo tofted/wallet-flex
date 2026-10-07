@@ -5,7 +5,6 @@ import * as THREE from 'three';
 // Everything is generated here. No game textures or assets are used.
 
 const ICE = 0x7fd6ff;
-const GRASS = 0x86d96a;
 
 function rng(seed) {
   return () => {
@@ -208,7 +207,7 @@ export function createMinecraftScene(host) {
   hub.rotation.y = -0.25;
   world.add(hub, smp);
 
-  // --- the link: a faint dotted path with pulses in both directions
+  // --- the link: a faint dotted path with one orb travelling along it
   const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]);
   const cube = new THREE.BoxGeometry(1, 1, 1);
   const dotMat = new THREE.MeshBasicMaterial({ color: 0x9fb4c8, transparent: true, opacity: 0.45, toneMapped: false });
@@ -227,23 +226,34 @@ export function createMinecraftScene(host) {
     x.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
   })();
-  const pulses = [];
-  function pulse(color, dir, offset) {
-    const g = new THREE.Group();
-    const core = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color, toneMapped: false }));
-    core.scale.setScalar(0.42);
-    const halo = new THREE.Sprite(
-      new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }),
+  const glowSprite = (opacity) =>
+    new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: glowTex, color: ICE, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }),
     );
-    halo.scale.setScalar(3);
-    g.add(halo, core);
-    world.add(g);
-    pulses.push({ g, dir, offset });
-  }
-  for (let i = 0; i < 5; i++) {
-    pulse(ICE, 1, i / 5);
-    pulse(GRASS, -1, (i + 0.5) / 5);
-  }
+
+  // One blue orb that travels hub -> SMP, flashes on arrival, rests, then travels back.
+  const orb = new THREE.Group();
+  const orbCore = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: 0xbfeaff, toneMapped: false }));
+  orbCore.scale.setScalar(0.5);
+  const orbHot = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }));
+  orbHot.scale.setScalar(0.26);
+  const orbHalo = glowSprite(0.95);
+  orb.add(orbHalo, orbCore, orbHot);
+  world.add(orb);
+
+  const TRAIL = 14;
+  const trail = Array.from({ length: TRAIL }, () => {
+    const sp = glowSprite(0);
+    world.add(sp);
+    return sp;
+  });
+  const flashes = [glowSprite(0), glowSprite(0)]; // [at the hub, at the SMP]
+  flashes.forEach((f) => world.add(f));
+
+  const TRAVEL = 2.4; // seconds one way
+  const REST = 0.5; // seconds spent glowing at each island
+  const CYCLE = 2 * (TRAVEL + REST);
+  const easeSine = (x) => -(Math.cos(Math.PI * x) - 1) / 2;
 
   // --- layout: side by side on wide screens, diagonal stack on tall ones
   const hubPos = new THREE.Vector3();
@@ -322,14 +332,45 @@ export function createMinecraftScene(host) {
     hub.rotation.y = -0.25 + t * 0.05;
     smp.rotation.y = 0.6 - t * 0.04;
 
-    for (const p of pulses) {
-      const u = still ? 0.5 : (t * 0.16 + p.offset) % 1;
-      curve.getPoint(p.dir > 0 ? u : 1 - u, tmp);
-      p.g.position.copy(tmp);
-      p.g.position.y += Math.sin(u * Math.PI) * 0.2;
-      p.g.rotation.y = t * 2;
-      p.g.visible = !still || p.offset < 0.01;
-    }
+    // orb: hub -> SMP -> hub, eased, with a rest at each end
+    const ph = t % CYCLE;
+    let lin; // 0 at the hub, 1 at the SMP
+    let dir; // +1 outbound, -1 returning, 0 resting
+    if (ph < TRAVEL) [lin, dir] = [ph / TRAVEL, 1];
+    else if (ph < TRAVEL + REST) [lin, dir] = [1, 0];
+    else if (ph < 2 * TRAVEL + REST) [lin, dir] = [1 - (ph - TRAVEL - REST) / TRAVEL, -1];
+    else [lin, dir] = [0, 0];
+    const u = still ? 0.5 : easeSine(lin);
+    const moving = still ? 0 : Math.sin(Math.PI * (dir === 0 ? 0 : dir > 0 ? lin : 1 - lin)); // 0 at the ends, 1 mid-flight
+
+    curve.getPoint(u, tmp);
+    orb.position.copy(tmp);
+    orb.position.y += Math.sin(u * Math.PI) * 0.25;
+    orbCore.rotation.set(t * 1.7, t * 2.3, 0);
+    orbHot.rotation.copy(orbCore.rotation);
+    const breathe = still ? 1 : 1 + 0.18 * Math.sin(t * 9);
+    orbHalo.scale.setScalar((3.2 + moving * 0.8) * breathe);
+
+    // trail: afterimages lagging behind along the curve, only while moving
+    const sign = dir < 0 ? -1 : 1;
+    trail.forEach((sp, i) => {
+      const ut = Math.min(1, Math.max(0, u - sign * (i + 1) * 0.02));
+      curve.getPoint(ut, sp.position);
+      sp.position.y += Math.sin(ut * Math.PI) * 0.25;
+      const fade = 1 - (i + 1) / (TRAIL + 1);
+      sp.material.opacity = 0.55 * fade * moving;
+      sp.scale.setScalar((2.6 - i * 0.12) * (0.6 + 0.4 * moving));
+    });
+
+    // arrival flashes: a soft burst on the island the orb just reached
+    flashes.forEach((f, i) => {
+      const start = i === 0 ? 2 * TRAVEL + REST : TRAVEL; // when the orb lands at the hub / SMP
+      const age = still ? 9 : (ph - start + CYCLE) % CYCLE;
+      const life = Math.min(1, age / 0.9);
+      curve.getPoint(i === 0 ? 0 : 1, f.position);
+      f.material.opacity = age < 0.9 ? 0.85 * (1 - life) * (1 - life) : 0;
+      f.scale.setScalar(2.4 + life * 6.5);
+    });
 
     const k = 1 - Math.exp(-dt * 4);
     world.rotation.y += (yawBase + state.px * 0.14 - world.rotation.y) * k;
