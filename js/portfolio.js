@@ -15,6 +15,51 @@ export const PORTFOLIO = {
   intro:
     'Two Minecraft servers that work as one network. Players move between them without a proxy, and moderation and announcements work on both.',
 
+  // Shown as a card above the projects. Not in the jump buttons.
+  network: {
+    id: 'network',
+    name: 'One network, two engines',
+    tagline: 'A from-scratch Minestom hub and a Paper survival server, linked with no proxy.',
+    description: [
+      'Networks usually put a proxy in front of their servers. This one does not. CMinigames runs on Minestom, a bare protocol library with no gameplay of its own, and CSMP runs on Paper, which is full vanilla. Two very different engines, behaving like one server.',
+      'Players cross between them, moderation and announcements work on both, and each server can warn the other about maintenance, even though there is no direct channel between them.',
+    ].join('\n\n'),
+    stats: [],
+    tags: ['Minestom', 'Paper', 'No proxy', 'Transfer packets', 'Cookies', 'SRV records'],
+    links: [],
+    sections: [
+      {
+        title: 'How the two talk',
+        items: [
+          {
+            title: 'Client transfer packets',
+            text: 'Players cross with Minecraft\'s own transfer packet, so there is no proxy in the path. The client follows SRV records, so the real port lives only in DNS.',
+          },
+          {
+            title: 'Cookies carry the reason',
+            text: 'Chat is wiped by the hop, so the reason for a transfer travels in a client cookie. The hub reads it on arrival and shows an "SMP restarting" notice with a countdown that reconnects the player once the SMP answers a ping again.',
+          },
+          {
+            title: 'Server-list ping as a message channel',
+            text: 'The servers have no link to each other, so the hub publishes its maintenance schedule in its server-list ping. The Paper plugin pings the hub every thirty seconds and adopts it. Both show a countdown boss bar, and only the server actually named stops.',
+          },
+          {
+            title: 'One set of tools',
+            text: 'The Paper plugin has its own staff tools, so punishments, mutes, announcements and scheduled maintenance work the same on both sides.',
+          },
+        ],
+      },
+      {
+        title: 'Why it is awkward',
+        items: [
+          { title: 'Opposite engines', text: 'Minestom implements the protocol and nothing else, so every mechanic on the hub was written for it. Paper brings all of vanilla. Making them feel like one place means matching behaviour across two codebases that share nothing.' },
+          { title: 'Shutdown order', text: 'Paper disables plugins before it kicks players, so the plugin has to hand everyone to the hub in that window, or they land on a disconnect screen.' },
+        ],
+      },
+    ],
+    images: [],
+  },
+
   projects: [
     {
       id: 'csmp',

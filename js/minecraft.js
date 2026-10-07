@@ -95,5 +95,5 @@ function project(p) {
 export function renderMinecraft(root, introEl, navEl) {
   introEl.textContent = PORTFOLIO.intro || 'My Minecraft projects.';
   navEl.replaceChildren(...PORTFOLIO.projects.map((p) => h('a', { class: 'btn small', href: `#/minecraft/${p.id}` }, p.name)));
-  root.replaceChildren(...PORTFOLIO.projects.map(project));
+  root.replaceChildren(...[PORTFOLIO.network, ...PORTFOLIO.projects].filter(Boolean).map(project));
 }
