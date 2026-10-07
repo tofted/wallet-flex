@@ -1,79 +1,58 @@
-import { CONFIG, links } from './config.js';
-import { loadOverview } from './data.js';
-import { timeAgo } from './format.js';
-import { renderOverview, renderSkeleton } from './ui.js';
-import { createWallet } from './wallet3d.js';
+import { CONFIG } from './config.js';
 
+// Tiny hash router. Hash routes work on any static host with zero server config.
+//   #/            start menu
+//   #/wallet      3D wallet + live overview
+//   #/minecraft   portfolio (#/minecraft/csmp scrolls to a section)
 const $ = (sel) => document.querySelector(sel);
+const views = { menu: $('#view-menu'), wallet: $('#view-wallet'), minecraft: $('#view-minecraft') };
+const titles = {
+  menu: 'calanonsol',
+  wallet: `@${CONFIG.pumpUsername} · wallet`,
+  minecraft: `@${CONFIG.pumpUsername} · Minecraft`,
+};
 
-const stage = $('#stage');
-const overview = $('#overview');
-const refreshBtn = $('#refresh');
-const updated = $('#updated');
-const toggleBtn = $('#toggle');
-const hint = $('#hint');
-
-$('#link-pump').href = links.pump();
-$('#link-solscan').href = links.solscan();
 document.querySelectorAll('[data-username]').forEach((el) => (el.textContent = CONFIG.pumpUsername));
 
-// ---- 3D wallet (optional: the overview below works without WebGL)
-const wallet = createWallet(stage);
-if (wallet) {
-  const touch = window.matchMedia('(hover: none)').matches;
-  const label = (open) => {
-    toggleBtn.textContent = open ? 'Close wallet' : 'Open wallet';
-    toggleBtn.setAttribute('aria-expanded', String(open));
-    hint.textContent = open ? 'Details below ↓' : touch ? 'Tap the wallet to open' : 'Hover to open';
-    stage.classList.toggle('is-open', open);
-  };
-  label(false);
-  wallet.onChange(label);
-  toggleBtn.addEventListener('click', () => wallet.toggle());
-} else {
-  stage.classList.add('no-webgl');
-  toggleBtn.hidden = true;
-  hint.textContent = '';
+let current = null;
+let walletMod = null;
+let mcRendered = false;
+
+function parse() {
+  const [, name = '', section = ''] = location.hash.split('/');
+  return { name: name in views ? name : 'menu', section };
 }
 
-// ---- live data
-let lastData = null;
-let inflight = false;
+async function show({ name, section }) {
+  const changed = name !== current;
+  const prev = current;
+  current = name;
 
-function setUpdated() {
-  if (!lastData) return;
-  const failed = Object.values(lastData.errors).filter(Boolean).length;
-  updated.textContent =
-    failed >= 5 ? 'Live data unreachable' : `Updated ${timeAgo(lastData.fetchedAt)}${failed ? ` · ${failed} source${failed === 1 ? '' : 's'} failed` : ''}`;
-}
+  for (const [k, el] of Object.entries(views)) el.hidden = k !== name;
+  document.title = titles[name];
 
-async function refresh() {
-  if (inflight) return;
-  inflight = true;
-  refreshBtn.disabled = true;
-  refreshBtn.textContent = 'Refreshing…';
-  try {
-    const d = await loadOverview();
-    lastData = d;
-    renderOverview(overview, d);
-    wallet?.setData(d);
-    setUpdated();
-  } catch (err) {
-    console.error(err);
-    updated.textContent = 'Something broke loading data';
-  } finally {
-    inflight = false;
-    refreshBtn.disabled = false;
-    refreshBtn.textContent = 'Refresh';
+  if (prev === 'wallet' && changed) walletMod?.leave();
+
+  if (name === 'wallet') {
+    walletMod ??= await import('./wallet-page.js');
+    if (current === 'wallet') walletMod.enter(); // user may have navigated away while loading
+  }
+
+  if (name === 'minecraft' && !mcRendered) {
+    mcRendered = true;
+    const { renderMinecraft } = await import('./minecraft.js');
+    renderMinecraft($('#mc-projects'), $('#mc-intro'), $('#mc-nav'));
+  }
+
+  if (changed) {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Move focus into the new view so keyboard and screen reader users land somewhere sensible.
+    views[name].querySelector('h1')?.focus({ preventScroll: true });
+  }
+  if (name === 'minecraft' && section) {
+    document.getElementById(`mc-${section}`)?.scrollIntoView({ block: 'start' });
   }
 }
 
-renderSkeleton(overview);
-refreshBtn.addEventListener('click', refresh);
-refresh();
-setInterval(() => {
-  if (!document.hidden) refresh();
-}, CONFIG.refreshMs);
-setInterval(() => {
-  if (!inflight) setUpdated();
-}, 15_000);
+addEventListener('hashchange', () => show(parse()));
+show(parse());

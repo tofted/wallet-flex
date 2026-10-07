@@ -7,6 +7,22 @@ A 3D leather wallet that folds open on hover and shows a live overview of a Sola
 
 Static site. No build step, no backend, no API keys. three.js is vendored in `vendor/`.
 
+## Pages
+
+The site opens on a start menu split 50/50 (stacked on phones):
+
+| Route | What |
+| --- | --- |
+| `#/` | start menu |
+| `#/wallet` | the 3D wallet and live overview |
+| `#/minecraft` | Minecraft portfolio (`#/minecraft/csmp` and `#/minecraft/cminigames` jump to a section) |
+
+Hash routes mean it works on GitHub Pages with no server config. three.js only loads when you enter the wallet.
+
+### Filling in the Minecraft portfolio
+
+Edit `js/portfolio.js`. Every field is optional (tagline, description, server address with copy button, stats, tags, links, screenshots) and empty ones are hidden. A project with nothing filled in shows "Details coming soon". Screenshots can be https URLs or files you commit to `assets/`.
+
 ## Run it
 
 ES modules don't load from `file://`, so serve the folder:
@@ -67,6 +83,9 @@ js/config.js      wallet, username, endpoints
 js/data.js        all network calls, partial failure tolerant
 js/wallet3d.js    the 3D wallet, textures, card painting, hover logic
 js/ui.js          overview panels
-js/main.js        glue
+js/main.js        hash router (menu / wallet / minecraft)
+js/wallet-page.js wallet view, loaded lazily
+js/minecraft.js   portfolio renderer
+js/portfolio.js   your Minecraft portfolio content
 vendor/three/     three.js (MIT) + RoundedBoxGeometry, RoomEnvironment
 ```

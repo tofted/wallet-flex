@@ -703,6 +703,7 @@ export function createWallet(stage) {
     setData,
     isOpen: () => Boolean(state.target),
     toggle: () => setOpen(state.target ? 0 : 1, true),
+    close: () => setOpen(0),
     onChange: (fn) => (listeners.add(fn), () => listeners.delete(fn)),
     dispose() {
       cancelAnimationFrame(raf);
