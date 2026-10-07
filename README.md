@@ -15,13 +15,18 @@ The site opens on a start menu split 50/50 (stacked on phones):
 | --- | --- |
 | `#/` | start menu |
 | `#/wallet` | the 3D wallet and live overview |
-| `#/minecraft` | Minecraft portfolio (`#/minecraft/csmp` and `#/minecraft/cminigames` jump to a section) |
+| `#/minecraft` | Minecraft homepage: 3D voxel hero, the two servers, the ecosystem diagram, numbers |
+| `#/minecraft/technology` | the technical portfolio (`.../technology/network`, `/csmp`, `/cminigames` jump to a section). Old `#/minecraft/csmp` style links redirect here |
 
 Hash routes mean it works on GitHub Pages with no server config. three.js only loads when you enter the wallet.
 
-### Filling in the Minecraft portfolio
+### Editing the Minecraft pages
 
-Edit `js/portfolio.js`. Every field is optional (tagline, description, server address with copy button, stats, tags, links, screenshots) and empty ones are hidden. A project with nothing filled in shows "Details coming soon". Screenshots can be https URLs or files you commit to `assets/`.
+Everything lives in `js/portfolio.js`: the homepage copy (`home`), the network card, and both projects. Server names, taglines and addresses are written once and reused on the homepage.
+
+The 3D hero (`js/minecraft-scene.js`) is built entirely in code from plain coloured cubes, with no game textures or assets.
+
+For the project entries: Every field is optional (tagline, description, server address with copy button, stats, tags, links, screenshots) and empty ones are hidden. A project with nothing filled in shows "Details coming soon". Screenshots can be https URLs or files you commit to `assets/`.
 
 ## Run it
 
@@ -85,7 +90,9 @@ js/wallet3d.js    the 3D wallet, textures, card painting, hover logic
 js/ui.js          overview panels
 js/main.js        hash router (menu / wallet / minecraft)
 js/wallet-page.js wallet view, loaded lazily
-js/minecraft.js   portfolio renderer
+js/minecraft-home.js   Minecraft homepage content
+js/minecraft-scene.js  homepage 3D voxel islands
+js/minecraft.js   Technology page renderer
 js/portfolio.js   your Minecraft portfolio content
 vendor/three/     three.js (MIT) + RoundedBoxGeometry, RoomEnvironment
 ```

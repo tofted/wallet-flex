@@ -12,6 +12,45 @@
 // Links must be https:// URLs. Images can be https:// URLs or files you commit to
 // this repo, e.g. 'assets/csmp-spawn.jpg'. Everything is plain text, no markdown or HTML.
 export const PORTFOLIO = {
+  // Copy for the Minecraft homepage (#/minecraft). Server names, taglines and
+  // addresses are pulled from `projects` below so they only live in one place.
+  home: {
+    headline: ['Two servers.', 'One network.'],
+    sub: 'CSMP is survival where the admins do not play survival. CMinigames is a minigame hub written from scratch. They run on different engines and talk to each other using nothing but the Minecraft protocol.',
+    cards: {
+      csmp: {
+        kicker: 'Survival',
+        facts: ['Admins do not play survival', 'Next-gen anticheat and plugins', 'Lower lag, legit players protected', 'Bad players actively punished'],
+      },
+      cminigames: {
+        kicker: 'Minigames',
+        facts: ['10 minigames, 11 hand-built arenas', 'Written from scratch on Minestom', 'Every arena generated in code', 'A quartz plaza hub over the void'],
+      },
+    },
+    ecosystem: {
+      title: 'The first Minestom and Paper ecosystem.',
+      text: 'A Minestom hub and a Paper plugin that signal each other directly, in both directions, with no proxy and no separate messaging layer. Just the Minecraft protocol.',
+      hub: { name: 'CMinigames', engine: 'Minestom', note: 'Written from scratch' },
+      smp: { name: 'CSMP', engine: 'Paper', note: 'Survival plus a companion plugin' },
+      lanes: [
+        { dir: 'Hub to SMP', title: 'Server-list ping', text: 'Carries the maintenance schedule. The plugin polls it every 30 seconds.' },
+        { dir: 'SMP to hub', title: 'Transfer and cookie', text: 'Players are handed over with the reason attached, then reconnected when the SMP is back.' },
+      ],
+    },
+    numbers: [
+      { value: '10', label: 'minigames' },
+      { value: '11', label: 'hand-built arenas' },
+      { value: '17.3K', label: 'lines in the hub' },
+      { value: '15', label: 'test programs' },
+      { value: '0', label: 'proxies' },
+    ],
+    teaser: {
+      title: 'Under the hood',
+      text: 'Gameplay the engine does not have, server authority under lag, a fault-isolated tick loop, and a test suite that plays the game without a client.',
+      chips: ['Server authority under lag', 'Fault-isolated tick loop', 'Testing without a client', 'Shipping unfinished work safely'],
+    },
+  },
+
   intro:
     'Two Minecraft servers that work as one network. Players move between them without a proxy, and moderation and announcements work on both.',
 

@@ -82,16 +82,38 @@
   <div id="view-minecraft" class="view mc" hidden>
     <header class="top">
       <a class="back" href="#/">← Menu</a>
+      <nav id="mc-topnav" aria-label="Minecraft">
+        <a href="#/minecraft" data-sub="">Home</a>
+        <a href="#/minecraft/technology" data-sub="technology">Technology</a>
+      </nav>
     </header>
 
     <main>
-      <section class="mc-hero">
-        <p class="eyebrow">Portfolio</p>
-        <h1 tabindex="-1">Minecraft</h1>
-        <p id="mc-intro" class="mc-intro"></p>
-        <nav id="mc-nav" class="mc-nav" aria-label="Projects"></nav>
-      </section>
-      <div id="mc-projects" class="mc-projects"></div>
+      <!-- Home -->
+      <div id="mc-home" class="mc-page">
+        <section id="mch-hero" class="mch-hero">
+          <div id="mch-copy" class="mch-copy">
+            <p class="eyebrow">Minecraft</p>
+            <h1 tabindex="-1">Two servers.<br />One network.</h1>
+            <p class="mch-sub"></p>
+          </div>
+          <div id="mch-stage" class="mch-stage"></div>
+          <div class="mch-ctas"></div>
+          <a class="mch-scroll" href="#/minecraft/technology" aria-label="Explore the technology">Technology ↓</a>
+        </section>
+        <div id="mch-body" class="mch-body"></div>
+      </div>
+
+      <!-- Technology (the portfolio) -->
+      <div id="mc-tech" class="mc-page" hidden>
+        <section class="mc-hero">
+          <p class="eyebrow">Minecraft</p>
+          <h1 tabindex="-1">Technology</h1>
+          <p id="mc-intro" class="mc-intro"></p>
+          <nav id="mc-nav" class="mc-nav" aria-label="Sections"></nav>
+        </section>
+        <div id="mc-projects" class="mc-projects"></div>
+      </div>
     </main>
 
     <footer class="foot">
