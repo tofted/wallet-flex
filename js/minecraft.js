@@ -10,7 +10,7 @@ function okUrl(u) {
 }
 
 function hasDetails(p) {
-  return Boolean(p.tagline || p.description || p.address || p.stats?.length || p.tags?.length || p.links?.length || p.images?.length);
+  return Boolean(p.tagline || p.description || p.address || p.stats?.length || p.tags?.length || p.links?.length || p.images?.length || p.sections?.length);
 }
 
 function copy(text) {
@@ -25,6 +25,22 @@ function copy(text) {
     setTimeout(() => (btn.textContent = 'Copy'), 1600);
   });
   return btn;
+}
+
+function section(sec) {
+  const items = (sec.items ?? []).filter((i) => i.title || i.text);
+  if (!items.length) return null;
+  return h(
+    'div',
+    { class: 'mc-section' },
+    h('h3', {}, String(sec.title ?? '')),
+    sec.intro ? h('p', { class: 'mc-text' }, String(sec.intro)) : null,
+    h(
+      'ul',
+      { class: 'mc-items' },
+      items.map((i) => h('li', { class: 'mc-item' }, i.title ? h('h4', {}, String(i.title)) : null, i.text ? h('p', {}, String(i.text)) : null)),
+    ),
+  );
 }
 
 function project(p) {
@@ -47,7 +63,7 @@ function project(p) {
           'div',
           { class: 'mc-body' },
           paragraphs.map((t) => h('p', { class: 'mc-text' }, t)),
-          p.address ? h('div', { class: 'addr mc-addr' }, h('code', {}, p.address), copy(p.address)) : null,
+          p.address ? h('div', { class: 'mc-join' }, h('span', {}, 'Server address'), h('div', { class: 'addr mc-addr' }, h('code', {}, p.address), copy(p.address))) : null,
           p.stats?.length
             ? h(
                 'dl',
@@ -63,6 +79,7 @@ function project(p) {
                 links.map((l) => h('a', { class: 'btn small', href: l.href, target: '_blank', rel: 'noopener noreferrer' }, `${l.label} ↗`)),
               )
             : null,
+          (p.sections ?? []).map(section),
           images.length
             ? h(
                 'div',

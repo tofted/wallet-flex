@@ -290,7 +290,15 @@ td.strong { font-weight: 700; }
 .mc-tagline { margin: 6px 0 0; color: var(--grass); font-weight: 600; }
 .mc-body { margin-top: 18px; display: grid; gap: 16px; }
 .mc-text { margin: 0; color: var(--dim); max-width: 68ch; }
+.mc-join { display: grid; gap: 6px; }
+.mc-join > span { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
 .mc-addr { margin: 0; max-width: 420px; }
+.mc-section { margin-top: 14px; }
+.mc-section h3 { margin: 0 0 12px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grass); font-weight: 700; }
+.mc-items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 12px; }
+.mc-item { background: rgba(0, 0, 0, 0.28); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.mc-item h4 { margin: 0 0 4px; font-size: 15px; }
+.mc-item p { margin: 0; font-size: 14px; color: var(--dim); }
 .tags { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
 .tags li { font-size: 12.5px; padding: 4px 11px; border-radius: 999px; border: 1px solid rgba(134, 217, 106, 0.4); color: var(--grass); }
 .mc-links { margin: 0; display: flex; gap: 10px; flex-wrap: wrap; }
