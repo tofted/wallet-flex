@@ -19,9 +19,9 @@ export const PORTFOLIO = {
   network: {
     id: 'network',
     name: 'One network, two engines',
-    tagline: 'A Minestom hub and a Paper plugin that talk to each other using nothing but the Minecraft protocol.',
+    tagline: 'The first Minestom and Paper ecosystem: a hub and a plugin that talk to each other using nothing but the Minecraft protocol.',
     description: [
-      'CMinigames runs on Minestom, a bare protocol library with no gameplay of its own, and CSMP runs on Paper, which is full vanilla. Two very different engines, and the hub and the SMP plugin signal each other directly, in both directions.',
+      'This is the first time a Minestom server and a Paper plugin have communicated like this to form one ecosystem. CMinigames runs on Minestom, a bare protocol library with no gameplay of its own, and CSMP runs on Paper, which is full vanilla. Two very different engines, and the hub and the SMP plugin signal each other directly, in both directions.',
       'There is no proxy and no separate messaging layer between them. They use only what the Minecraft protocol already provides: the server-list ping, client cookies and transfer packets. That is enough for one maintenance schedule that warns both servers, and a restart countdown that reconnects players when the SMP comes back.',
     ].join('\n\n'),
     stats: [],
